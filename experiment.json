@@ -1,0 +1,48 @@
+{
+  "model": "deit_base_patch16_224.fb_in1k",
+  "initialization": "dense timm ImageNet-1k pretrained weights",
+  "target_layers": 48,
+  "training_weight_quantization": "W8 fake quantization with fixed S+M magnitude-plane block masks",
+  "mask": {
+    "encoding": "8-bit sign+magnitude",
+    "block": "8 consecutive input weights per output row and bit plane",
+    "masked_planes": "S+M magnitude b0-b6; sign b7 is not directly masked",
+    "target_zero_block_rate_percent": 75.0,
+    "selection": "global-coverage",
+    "qat_mask_is_fixed": true
+  },
+  "qat": {
+    "epochs": 35,
+    "pilot_steps_before_resume": 500,
+    "gpus": 4,
+    "gpu_model": "RTX 3090",
+    "batch_size_per_gpu": 256,
+    "global_batch_size": 1024,
+    "optimizer": "AdamW",
+    "learning_rate": 0.0001,
+    "weight_decay": 0.05,
+    "warmup_epochs": 5,
+    "seed": 17,
+    "amp": "FP16"
+  },
+  "ptq_calibration": {
+    "dataset": "ImageNet train",
+    "images": 32,
+    "batch_size": 4,
+    "seed": 17
+  },
+  "w8a8_evaluation": {
+    "dataset": "ImageNet validation",
+    "images": 50000,
+    "transformer_linears": "W8A8 PTQ4ViT fake-QDQ",
+    "attention": "Q8/K4/P8/V4 QDQ",
+    "patch_embedding_and_classifier": "FP32",
+    "top1_percent": 77.814,
+    "top5_percent": 93.416,
+    "dense_w8a8_top1_percent": 81.692,
+    "top1_drop_percentage_points": 3.878,
+    "weight_smag_block_zero_rate_after_qat_percent": 76.320747
+  },
+  "source_checkpoint_sha256": "27d67f16d9928ff608a84ad7d2f60d680afd19e63ce4d63cbafdc962b030ff99",
+  "ptq4vit_commit": "b42c790c2811e7835d435a9f9a6c64a079a7483a"
+}

@@ -1,0 +1,3 @@
+[submodule "PTQ4ViT"]
+	path = PTQ4ViT
+	url = https://github.com/hahnyuan/PTQ4ViT.git
